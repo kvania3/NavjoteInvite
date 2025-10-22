@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>Redirecting...</title>
     <script>
-      const path = window.location.pathname.split('/').filter(Boolean).pop();
+      // Extract the path after the base URL
+      const path = window.location.pathname.split('/').pop();
+
+      // If there’s a userId-like path, redirect to index with query param
       if (path && path !== '404.html' && path !== 'index.html') {
-        const base = window.location.origin + window.location.pathname.replace(path, '');
-        const newUrl = base + '?userId=' + path;
+        const newUrl = window.location.origin + window.location.pathname.replace(path, '') + '?userId=' + path;
         window.location.replace(newUrl);
       } else {
         window.location.replace(window.location.origin + window.location.pathname.replace('404.html', ''));
