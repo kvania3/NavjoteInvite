@@ -15,28 +15,28 @@
   <div id="viewer"></div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const userId = params.get('userId');
-    const viewer = document.getElementById('viewer');
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
 
-    if (userId) {
-      showInvite(userId);
+    if (!userId) {
+      document.getElementById('viewer').innerHTML = '<p class="error">No userId provided in URL!</p>';
     } else {
-      viewer.innerHTML = '<p>Welcome! Please use your personalized link.</p>';
-    }
-
-    function showInvite(id) {
       fetch('data.json')
-        .then(r => r.json())
+        .then(res => res.json())
         .then(data => {
-          const pdf = data[id];
-          if (!pdf) {
-            viewer.innerHTML = '<p class="error">Invalid invitation link!</p>';
+          const pdfPath = data[userId];
+          if (!pdfPath) {
+            document.getElementById('viewer').innerHTML = '<p class="error">Invalid userId!</p>';
           } else {
-            viewer.innerHTML = `<iframe src="${pdf}"></iframe>`;
+            document.getElementById('viewer').innerHTML = `
+              <iframe src="${pdfPath}"></iframe>
+            `;
           }
         })
-        .catch(() => viewer.innerHTML = '<p class="error">Error loading invite.</p>');
+        .catch(err => {
+          document.getElementById('viewer').innerHTML = '<p class="error">Error loading invitation.</p>';
+          console.error(err);
+        });
     }
   </script>
 </body>
