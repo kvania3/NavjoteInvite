@@ -47,6 +47,7 @@
     if (!userId) {
       viewerDiv.innerHTML = '<p>Please use your personalized invitation link.</p>';
     } else {
+		console.log('userId from URL =', userId);
       fetch('data.json')
         .then(r => r.json())
         .then(data => {
