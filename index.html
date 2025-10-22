@@ -28,9 +28,9 @@
           if (!pdfPath) {
             document.getElementById('viewer').innerHTML = '<p class="error">Invalid userId!</p>';
           } else {
+			const pdfUrl = `${user.pdf}#toolbar=0&navpanes=0&scrollbar=0`;
             document.getElementById('viewer').innerHTML = `
-              <iframe src="${pdfPath}"></iframe>
-            `;
+              iframe src="${pdfUrl}" allow="fullscreen"></iframe>`;
           }
         })
         .catch(err => {
