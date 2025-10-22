@@ -3,38 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invitation Viewer</title>
+  <title>Invite Viewer</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-    iframe { width: 80%; height: 80vh; border: none; margin-top: 20px; }
-    .error { color: red; font-weight: bold; }
+    body { 
+      font-family: sans-serif; 
+      text-align: center; 
+      padding: 50px; 
+      background: #f8f8f8;
+    }
+    iframe { 
+      width: 80%; 
+      height: 80vh; 
+      border: none; 
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      border-radius: 12px;
+    }
+    .error { 
+      color: red; 
+      font-weight: bold; 
+    }
   </style>
 </head>
 <body>
-  <h1>Your Personalized Invitation</h1>
+  <h1>Your Invitation</h1>
   <div id="viewer"></div>
 
   <script>
+    // Get userId from URL
     const urlParams = new URLSearchParams(window.location.search);
     const userId = urlParams.get('userId');
+    const viewerDiv = document.getElementById('viewer');
 
     if (!userId) {
-      document.getElementById('viewer').innerHTML = '<p class="error">No userId provided in URL!</p>';
+      viewerDiv.innerHTML = '<p class="error">No userId provided!</p>';
     } else {
       fetch('data.json')
         .then(res => res.json())
         .then(data => {
           const pdfPath = data[userId];
           if (!pdfPath) {
-            document.getElementById('viewer').innerHTML = '<p class="error">Invalid userId!</p>';
+            viewerDiv.innerHTML = '<p class="error">Invalid userId!</p>';
           } else {
-			const pdfUrl = `${user.pdf}#toolbar=0&navpanes=0&scrollbar=0`;
-            document.getElementById('viewer').innerHTML = `
-              iframe src="${pdfUrl}" allow="fullscreen"></iframe>`;
+            // Hide toolbar and UI
+            const pdfUrl = `${pdfPath}#toolbar=0&navpanes=0&scrollbar=0`;
+            viewerDiv.innerHTML = `
+              <iframe src="${pdfUrl}" allowfullscreen></iframe>
+            `;
           }
         })
         .catch(err => {
-          document.getElementById('viewer').innerHTML = '<p class="error">Error loading invitation.</p>';
+          viewerDiv.innerHTML = '<p class="error">Error loading data.</p>';
           console.error(err);
         });
     }
