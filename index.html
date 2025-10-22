@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invite Viewer</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 50px; }
+    iframe { width: 80%; height: 80vh; border: none; }
+    .error { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Your Invitation</h1>
+  <div id="viewer"></div>
+
+  <script>
+    // Get userId from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+
+    if (!userId) {
+      document.getElementById('viewer').innerHTML = '<p class="error">No userId provided!</p>';
+    } else {
+      fetch('data.json')
+        .then(res => res.json())
+        .then(data => {
+          const pdfPath = data[userId];
+          if (!pdfPath) {
+            document.getElementById('viewer').innerHTML = '<p class="error">Invalid userId!</p>';
+          } else {
+            // Embed PDF
+            document.getElementById('viewer').innerHTML = `
+              <iframe src="${pdfPath}"></iframe>
+            `;
+          }
+        })
+        .catch(err => {
+          document.getElementById('viewer').innerHTML = '<p class="error">Error loading data.</p>';
+          console.error(err);
+        });
+    }
+  </script>
+</body>
+</html>
