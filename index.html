@@ -3,40 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invitation Viewer</title>
+  <title>Your Invitation</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-    iframe { width: 80%; height: 80vh; border: none; margin-top: 20px; }
-    .error { color: red; font-weight: bold; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: #f8f8f8;
+      color: #333;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1em;
+    }
+    iframe {
+      width: 85%;
+      height: 80vh;
+      border: none;
+      margin-top: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
-  <h1>Your Personalized Invitation</h1>
+  <h1 id="inviteeName"></h1>
+  <p id="greeting"></p>
   <div id="viewer"></div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const userId = params.get('userId');
-    const viewer = document.getElementById('viewer');
+    const urlParams = new URLSearchParams(window.location.search);
+    const userId = urlParams.get('userId');
+    const viewerDiv = document.getElementById('viewer');
+    const nameDiv = document.getElementById('inviteeName');
+    const greetingDiv = document.getElementById('greeting');
 
-    if (userId) {
-      showInvite(userId);
+    if (!userId) {
+      viewerDiv.innerHTML = '<p>Please use your personalized invitation link.</p>';
     } else {
-      viewer.innerHTML = '<p>Welcome! Please use your personalized link.</p>';
-    }
-
-    function showInvite(id) {
       fetch('data.json')
         .then(r => r.json())
         .then(data => {
-          const pdf = data[id];
-          if (!pdf) {
-            viewer.innerHTML = '<p class="error">Invalid invitation link!</p>';
-          } else {
-            viewer.innerHTML = `<iframe src="${pdf}"></iframe>`;
+          const user = data[userId];
+          if (!user) {
+            viewerDiv.innerHTML = '<p class="error">Invalid or expired link!</p>';
+            return;
           }
+
+          nameDiv.textContent = `Dear ${user.name},`;
+          greetingDiv.textContent = user.greeting;
+
+          // Hide toolbar — use the built-in browser PDF viewer params
+          const pdfUrl = `${user.pdf}#toolbar=0&navpanes=0&scrollbar=0`;
+          viewerDiv.innerHTML = `<iframe src="${pdfUrl}" allow="fullscreen"></iframe>`;
         })
-        .catch(() => viewer.innerHTML = '<p class="error">Error loading invite.</p>');
+        .catch(err => {
+          console.error(err);
+          viewerDiv.innerHTML = '<p class="error">Error loading your invitation.</p>';
+        });
     }
   </script>
 </body>
