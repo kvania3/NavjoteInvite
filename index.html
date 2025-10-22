@@ -3,42 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invite Viewer</title>
+  <title>Invitation Viewer</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; }
-    iframe { width: 80%; height: 80vh; border: none; }
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+    iframe { width: 80%; height: 80vh; border: none; margin-top: 20px; }
     .error { color: red; font-weight: bold; }
   </style>
 </head>
 <body>
-  <h1>Your Invitation</h1>
+  <h1>Your Personalized Invitation</h1>
   <div id="viewer"></div>
 
   <script>
-    // Get userId from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('userId');
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('userId');
+    const viewer = document.getElementById('viewer');
 
-    if (!userId) {
-      document.getElementById('viewer').innerHTML = '<p class="error">No userId provided!</p>';
+    if (userId) {
+      showInvite(userId);
     } else {
+      viewer.innerHTML = '<p>Welcome! Please use your personalized link.</p>';
+    }
+
+    function showInvite(id) {
       fetch('data.json')
-        .then(res => res.json())
+        .then(r => r.json())
         .then(data => {
-          const pdfPath = data[userId];
-          if (!pdfPath) {
-            document.getElementById('viewer').innerHTML = '<p class="error">Invalid userId!</p>';
+          const pdf = data[id];
+          if (!pdf) {
+            viewer.innerHTML = '<p class="error">Invalid invitation link!</p>';
           } else {
-            // Embed PDF
-            document.getElementById('viewer').innerHTML = `
-              <iframe src="${pdfPath}"></iframe>
-            `;
+            viewer.innerHTML = `<iframe src="${pdf}"></iframe>`;
           }
         })
-        .catch(err => {
-          document.getElementById('viewer').innerHTML = '<p class="error">Error loading data.</p>';
-          console.error(err);
-        });
+        .catch(() => viewer.innerHTML = '<p class="error">Error loading invite.</p>');
     }
   </script>
 </body>
